@@ -69,10 +69,11 @@ export function useCatalogueSave(url: string, method: "POST" | "PATCH", nextHref
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body),
       });
-      const payload = (await response.json()) as { message?: string };
+      const payload = (await response.json()) as { message?: string; errors?: { message?: string }[] };
+      const details = payload.errors?.flatMap((item) => (item.message ? [item.message] : [])) ?? [];
 
       if (!response.ok) {
-        setError(payload.message || "The catalogue could not be saved.");
+        setError(details.join(" ") || payload.message || "The catalogue could not be saved.");
         return;
       }
 

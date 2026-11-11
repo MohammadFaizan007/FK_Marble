@@ -1,4 +1,4 @@
-import { CatalogueAccessError, CatalogueNotFoundError } from "@/services/admin-catalogue";
+import { CatalogueAccessError, CatalogueNotFoundError, CategoryInUseError, ProductInUseError } from "@/services/admin-catalogue";
 import { readAdminSession } from "@/lib/admin-auth";
 import { readSessionToken } from "@/lib/admin-session";
 import { apiError } from "@/lib/api-response";
@@ -27,6 +27,10 @@ export function catalogueFailure(error: unknown) {
 
   if (error instanceof CatalogueNotFoundError) {
     return apiError(error.message, 404);
+  }
+
+  if (error instanceof ProductInUseError || error instanceof CategoryInUseError) {
+    return apiError(error.message, 400);
   }
 
   if (error instanceof Error && (error.message === "This slug is already used." || error.message === "Choose a category.")) {

@@ -54,6 +54,11 @@ async function Dashboard() {
     ["Pending enquiries", counts.pendingEnquiries],
     ["Active staff", counts.activeStaff],
     ["Suppliers on file", counts.suppliers],
+    ["Purchase orders", counts.purchaseOrders],
+    ["Customers on file", counts.customers],
+    ["Sales orders", counts.salesOrders],
+    ["Quotations", counts.quotations],
+    ["Invoices", counts.invoices],
   ] as const;
 
   const peak = Math.max(...cards.map(([, value]) => value), 1);
@@ -61,8 +66,8 @@ async function Dashboard() {
   return (
     <AdminBar profile={profile} title={`Welcome back, ${profile.name}`}>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-        These counts come from the database. Demo samples stay out of the public product count. Sales, purchases,
-        stock value, and profit stay off this page until those records exist.
+          These counts come from the database. Demo samples stay out of the public product count. Stock value and
+          profit stay off this page.
       </p>
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map(([label, value]) => (

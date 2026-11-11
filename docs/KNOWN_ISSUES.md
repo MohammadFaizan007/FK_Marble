@@ -11,7 +11,7 @@
 - A new environment still creates the first owner with `npm run admin:create-owner`. The owner created before the audit log has no creation row.
 - The dashboard does not yet show sales, purchases, stock value, or profit. Those figures wait until the records exist.
 - Category and product images can be chosen from a computer and are stored under `public/uploads`. Cloudinary hosting is not configured. The six category cards still show the original reference photos until a staff member replaces them.
-- Inventory, purchasing, sales, quotations, invoices, and accounting are not implemented.
+- Accounting, payments, and tax invoices are not implemented. Quotations and invoices record the offered rate only.
 - The enquiry rate limit is stored in memory for a single server process.
 - Vitest and Playwright are not installed. The current suite uses `node --test`.
 - Git has not been asked to commit this work. `src/` is still untracked and the original root `app/` directory is deleted in the working tree.

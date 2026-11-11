@@ -26,6 +26,21 @@ test("a supplier can be stored without a balance", { skip: configured ? false : 
   assert.equal(supplier.gstin, null);
   assert.equal("openingBalance" in supplier, false);
 
-  await prisma.auditLog.deleteMany({ where: { entityId: supplier.id } });
-  await prisma.supplier.delete({ where: { id: supplier.id } });
+  const { deleteSupplier, SupplierInUseError } = await import("../src/services/admin-suppliers");
+  const { randomUUID } = await import("node:crypto");
+  const removedId = await deleteSupplier(prisma, supplier.id);
+  assert.equal(removedId, supplier.id);
+  assert.equal(await prisma.supplier.count({ where: { id: supplier.id } }), 0);
+
+  const kept = await createSupplier(prisma, { ...input, name: "Supplier kept" });
+  const orderId = randomUUID();
+  await prisma.purchaseOrder.create({
+    data: { id: orderId, number: `PO-${orderId.slice(0, 8)}`, supplierId: kept.id },
+  });
+
+  await assert.rejects(() => deleteSupplier(prisma, kept.id), SupplierInUseError);
+  assert.equal(await prisma.supplier.count({ where: { id: kept.id } }), 1);
+
+  await prisma.purchaseOrder.delete({ where: { id: orderId } });
+  await prisma.supplier.delete({ where: { id: kept.id } });
 });

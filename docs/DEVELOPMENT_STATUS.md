@@ -1,12 +1,12 @@
 # FK Marble development status
 
-Last updated: 11 November 2026, after supplier records.
+Last updated: 11 November 2026, after quotations and invoices.
 
 Read `docs/MASTER_BLUEPRINT.md`, this file, `docs/PROJECT_AUDIT.md`, and `docs/ARCHITECTURE.md` before continuing in a new session.
 
 ## Current phase
 
-Phase 6 — Purchasing and suppliers. Milestone 6.1 is complete. Milestone 6.2 is next. Cloudinary hosting remains pending until credentials are added.
+Phase 8 — Quotations and invoices. A quotation stores the rate offered to the customer, keeps each revision, and can be downloaded as a PDF. An invoice number comes from a database sequence when the invoice is issued. An issued invoice cannot be edited or deleted. Tax, payments, and accounting are not recorded. Cloudinary hosting remains pending until credentials are added.
 
 ## Completed modules
 
@@ -24,12 +24,16 @@ Phase 6 — Purchasing and suppliers. Milestone 6.1 is complete. Milestone 6.2 i
 - Enquiry status mapping in `docs/ENQUIRY_STATUS_PLAN.md`. The live enum is still `PENDING`, `CONTACTED`, `COMPLETED`, and `CANCELLED`.
 - Staff sign-in with scrypt password hashes, revocable sessions, and the owner role. No public registration page.
 - Server-side permission checks and an audit log for admin writes.
-- `/admin/login` and a dashboard that shows only database counts. Sales, purchases, stock value, and profit are not shown.
+- `/admin/login` and a dashboard that shows only database counts. Stock value and profit are not shown.
 - Staff category and product editing. Cost and wholesale prices are stored for staff and left out of the public API.
 - Category cards and the footer collections list read active categories from the database. Signed-in staff can replace a category image with a JPG, PNG, or WebP chosen on their computer.
 - Category and product forms fill Hindi from the English details. The Hindi site uses the saved Hindi text.
 - Signed-in staff can choose a product image from a computer. The file is stored on this server. Removing that image deletes the stored file.
-- Signed-in purchase staff can save supplier name, contact, phone, email, address, GSTIN, and notes. Purchases, stock, and payments are not recorded.
+- Signed-in purchase staff can save supplier name, contact, phone, email, address, GSTIN, and notes.
+- Signed-in sales staff can save a customer and the customer type. Opening balances and credit limits are not stored.
+- Signed-in sales staff can draft a sales order. An owner or administrator approves it. Reserving goods holds free stock, and dispatch reduces the quantity on hand in the same step. Prices stay off the sales order. Demo samples cannot be ordered.
+- Signed-in sales staff can draft a quotation with a customer rate, revise a sent quotation, and download a PDF. An accepted quotation can become a draft sales order. The sales order keeps quantities only.
+- A draft invoice can be issued by a role with `invoice.issue`. The number comes from `invoice_number_seq` and is not reused. Cancelling an issued invoice keeps the number and the row.
 
 ## In progress
 
@@ -38,7 +42,7 @@ None.
 ## Pending modules
 
 - Milestone 5.3: Cloudinary image hosting, after credentials are added.
-- Milestone 6.2: purchase orders, goods receipts, and stock updates in one transaction. Do not show cost or wholesale prices on the public site, and do not migrate enquiry statuses.
+- Phase 9: accounting. Do not show cost or wholesale prices on the public site, and do not migrate enquiry statuses.
 
 ## Files created in milestone 1.1 and 2.1
 
@@ -222,4 +226,4 @@ See `docs/KNOWN_ISSUES.md`.
 
 ## Next implementation task
 
-Milestone 6.2. Add purchase orders, goods receipts, and stock updates in one transaction. Do not show cost or wholesale prices on the public site, and do not migrate enquiry statuses. Cloudinary hosting stays pending until credentials are added.
+Phase 9. Add accounting records. Do not show cost or wholesale prices on the public site, and do not migrate enquiry statuses. Cloudinary hosting stays pending until credentials are added. Do not claim GST compliance.

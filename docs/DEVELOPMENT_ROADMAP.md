@@ -54,15 +54,15 @@ Staff can choose a category or product image from a computer. The file is stored
 | ID | Milestone | State |
 | --- | --- | --- |
 | 6.1 | Supplier records for signed-in staff. No purchases, stock, or payments | Complete |
-| 6.2 | Purchase orders, goods receipts, and stock updates in one transaction | Pending |
+| 6.2 | Purchase orders, goods receipts, and stock updates in one transaction | Complete |
 
 ## Phase 7 — Sales and customers
 
-Customer types, sales orders, reservation, and dispatch. No online checkout in the first release.
+| 7.1 | Customer types, sales orders, stock reservation, and dispatch. No prices, invoices, or payments | Complete |
 
 ## Phase 8 — Quotations and invoices
 
-Quotation PDF, revisions, invoice numbers from a database sequence, and no silent edits after a document is issued.
+| 8.1 | Quotation PDF, revisions, invoice numbers from a database sequence, and no silent edits after a document is issued | Complete |
 
 ## Phase 9 — Accounting
 

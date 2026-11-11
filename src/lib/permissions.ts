@@ -15,6 +15,7 @@ export const adminPermissions = [
   "supplier.view",
   "supplier.update",
   "sales.create",
+  "sales.approve",
   "invoice.issue",
   "payment.record",
   "expense.record",

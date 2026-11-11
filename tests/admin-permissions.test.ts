@@ -12,11 +12,19 @@ test("the owner holds every permission", () => {
 test("sales staff cannot create products or grant access", () => {
   assert.equal(hasPermission("SALES", "product.view"), true);
   assert.equal(hasPermission("SALES", "sales.create"), true);
+  assert.equal(hasPermission("SALES", "sales.approve"), false);
+  assert.equal(hasPermission("SALES", "invoice.issue"), false);
+  assert.equal(hasPermission("ACCOUNTANT", "invoice.issue"), true);
+  assert.equal(hasPermission("ACCOUNTANT", "sales.create"), false);
+  assert.equal(hasPermission("ADMIN", "sales.approve"), true);
   assert.equal(hasPermission("SALES", "product.create"), false);
   assert.equal(hasPermission("SALES", "cost.view"), false);
   assert.equal(hasPermission("SALES", "user.manage"), false);
   assert.equal(hasPermission("SALES", "supplier.view"), false);
   assert.equal(hasPermission("PURCHASE", "supplier.update"), true);
+  assert.equal(hasPermission("PURCHASE", "purchase.create"), true);
+  assert.equal(hasPermission("PURCHASE", "purchase.approve"), false);
+  assert.equal(hasPermission("SALES", "purchase.create"), false);
   assert.equal(canGrant("SALES", "product.view"), false);
 });
 

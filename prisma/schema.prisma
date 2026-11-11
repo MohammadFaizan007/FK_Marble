@@ -130,6 +130,11 @@ model Product {
   isDemo       Boolean        @default(false)
   images       ProductImage[]
   enquiries    Enquiry[]
+  purchaseOrderItems PurchaseOrderItem[]
+  salesOrderItems    SalesOrderItem[]
+  quotationItems     QuotationItem[]
+  invoiceItems       InvoiceItem[]
+  stockMovements     StockMovement[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -186,11 +191,282 @@ model Supplier {
   address     String?
   gstin       String?
   notes       String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive       Boolean         @default(true)
+  purchaseOrders PurchaseOrder[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@index([isActive, name])
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  APPROVED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum StockMovementType {
+  PURCHASE_RECEIPT
+  SALES_DISPATCH
+}
+
+model PurchaseOrder {
+  id         String              @id
+  number     String              @unique
+  supplierId String
+  supplier   Supplier            @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  status     PurchaseOrderStatus @default(DRAFT)
+  notes      String?
+  items      PurchaseOrderItem[]
+  receipts   GoodsReceipt[]
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  @@index([status, createdAt])
+  @@index([supplierId])
+}
+
+model PurchaseOrderItem {
+  id                String             @id
+  purchaseOrderId   String
+  purchaseOrder     PurchaseOrder      @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity          Decimal            @db.Decimal(12, 2)
+  receivedQuantity  Decimal            @default(0) @db.Decimal(12, 2)
+  receiptLines      GoodsReceiptLine[]
+
+  @@unique([purchaseOrderId, productId])
+  @@index([productId])
+}
+
+model GoodsReceipt {
+  id              String             @id
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder      @relation(fields: [purchaseOrderId], references: [id], onDelete: Restrict)
+  notes           String?
+  lines           GoodsReceiptLine[]
+  createdAt       DateTime           @default(now())
+
+  @@index([purchaseOrderId, createdAt])
+}
+
+model GoodsReceiptLine {
+  id                  String            @id
+  goodsReceiptId      String
+  goodsReceipt        GoodsReceipt      @relation(fields: [goodsReceiptId], references: [id], onDelete: Cascade)
+  purchaseOrderItemId String
+  purchaseOrderItem   PurchaseOrderItem @relation(fields: [purchaseOrderItemId], references: [id], onDelete: Restrict)
+  quantity            Decimal           @db.Decimal(12, 2)
+  movement            StockMovement?
+
+  @@index([goodsReceiptId])
+  @@index([purchaseOrderItemId])
+}
+
+model StockMovement {
+  id                 String            @id
+  productId          String
+  product            Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  type               StockMovementType
+  quantity           Decimal           @db.Decimal(12, 2)
+  goodsReceiptLineId String?           @unique
+  goodsReceiptLine   GoodsReceiptLine? @relation(fields: [goodsReceiptLineId], references: [id], onDelete: Restrict)
+  dispatchLineId     String?           @unique
+  dispatchLine       DispatchLine?     @relation(fields: [dispatchLineId], references: [id], onDelete: Restrict)
+  createdAt          DateTime          @default(now())
+
+  @@index([productId, createdAt])
+}
+
+enum CustomerType {
+  RETAIL
+  WHOLESALE
+  CONTRACTOR
+  BUILDER
+  ARCHITECT
+  WALK_IN
+}
+
+enum SalesOrderStatus {
+  DRAFT
+  APPROVED
+  PARTIALLY_RESERVED
+  RESERVED
+  PARTIALLY_DISPATCHED
+  DISPATCHED
+  CANCELLED
+}
+
+model Customer {
+  id          String          @id
+  name        String
+  type        CustomerType
+  contactName String?
+  phone       String?
+  email       String?
+  address     String?
+  gstin       String?
+  notes       String?
+  isActive    Boolean         @default(true)
+  salesOrders SalesOrder[]
+  quotations  Quotation[]
+  invoices    Invoice[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([isActive, name])
+  @@index([type])
+}
+
+model SalesOrder {
+  id         String           @id
+  number     String           @unique
+  customerId String
+  customer   Customer         @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  status     SalesOrderStatus @default(DRAFT)
+  notes      String?
+  items       SalesOrderItem[]
+  dispatches  DispatchNote[]
+  quotations  Quotation[]
+  invoices    Invoice[]
+  createdAt   DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId])
+}
+
+model SalesOrderItem {
+  id                  String         @id
+  salesOrderId        String
+  salesOrder          SalesOrder     @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  productId           String
+  product             Product        @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity            Decimal        @db.Decimal(12, 2)
+  reservedQuantity    Decimal        @default(0) @db.Decimal(12, 2)
+  dispatchedQuantity  Decimal        @default(0) @db.Decimal(12, 2)
+  dispatchLines       DispatchLine[]
+
+  @@unique([salesOrderId, productId])
+  @@index([productId])
+}
+
+model DispatchNote {
+  id           String         @id
+  salesOrderId String
+  salesOrder   SalesOrder     @relation(fields: [salesOrderId], references: [id], onDelete: Restrict)
+  notes        String?
+  lines        DispatchLine[]
+  createdAt    DateTime       @default(now())
+
+  @@index([salesOrderId, createdAt])
+}
+
+model DispatchLine {
+  id               String         @id
+  dispatchNoteId   String
+  dispatchNote     DispatchNote   @relation(fields: [dispatchNoteId], references: [id], onDelete: Cascade)
+  salesOrderItemId String
+  salesOrderItem   SalesOrderItem @relation(fields: [salesOrderItemId], references: [id], onDelete: Restrict)
+  quantity         Decimal        @db.Decimal(12, 2)
+  movement         StockMovement?
+
+  @@index([dispatchNoteId])
+  @@index([salesOrderItemId])
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CONVERTED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  CANCELLED
+}
+
+model Quotation {
+  id           String          @id
+  number       String
+  revision     Int             @default(1)
+  familyId     String
+  customerId   String
+  customer     Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  status       QuotationStatus @default(DRAFT)
+  validUntil   DateTime?
+  notes        String?
+  terms        String?
+  salesOrderId String?         @unique
+  salesOrder   SalesOrder?     @relation(fields: [salesOrderId], references: [id], onDelete: Restrict)
+  items        QuotationItem[]
+  invoices     Invoice[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@unique([number, revision])
+  @@index([familyId, revision])
+  @@index([status, createdAt])
+  @@index([customerId])
+}
+
+model QuotationItem {
+  id          String    @id
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productName String
+  quantity    Decimal   @db.Decimal(12, 2)
+  unit        String
+  rate        Decimal   @db.Decimal(12, 2)
+
+  @@unique([quotationId, productId])
+  @@index([productId])
+}
+
+model Invoice {
+  id           String        @id
+  number       String?       @unique
+  customerId   String
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  quotationId  String?
+  quotation    Quotation?    @relation(fields: [quotationId], references: [id], onDelete: Restrict)
+  salesOrderId String?
+  salesOrder   SalesOrder?   @relation(fields: [salesOrderId], references: [id], onDelete: Restrict)
+  status       InvoiceStatus @default(DRAFT)
+  notes        String?
+  cancelReason String?
+  issuedAt     DateTime?
+  items        InvoiceItem[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId])
+  @@index([quotationId])
+}
+
+model InvoiceItem {
+  id          String  @id
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productName String
+  quantity    Decimal @db.Decimal(12, 2)
+  unit        String
+  rate        Decimal @db.Decimal(12, 2)
+
+  @@unique([invoiceId, productId])
+  @@index([productId])
 }
 
 model BusinessSettings {

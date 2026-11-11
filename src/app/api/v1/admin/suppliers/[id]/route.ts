@@ -1,1 +1,1 @@
-export { PATCH } from "../../../../admin/suppliers/[id]/route";
+export { DELETE, PATCH } from "../../../../admin/suppliers/[id]/route";

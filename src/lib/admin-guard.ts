@@ -28,17 +28,20 @@ export async function withAdminWrite<T>(
     return { ok: false, status: 403, message: "You do not have permission for this action." };
   }
 
-  const value = await getPrisma().$transaction(async (db) => {
-    const result = await write(db, profile);
-    await writeAuditLog(db, {
-      actorId: profile.id,
-      action: result.audit.action,
-      entityType: result.audit.entityType,
-      entityId: result.audit.entityId,
-      summary: result.audit.summary,
-    });
-    return result.value;
-  });
+  const value = await getPrisma().$transaction(
+    async (db) => {
+      const result = await write(db, profile);
+      await writeAuditLog(db, {
+        actorId: profile.id,
+        action: result.audit.action,
+        entityType: result.audit.entityType,
+        entityId: result.audit.entityId,
+        summary: result.audit.summary,
+      });
+      return result.value;
+    },
+    { maxWait: 10000, timeout: 20000 },
+  );
 
   return { ok: true, value };
 }

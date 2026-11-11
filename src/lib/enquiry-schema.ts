@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { chromeFor } from "@/i18n/chrome";
 import type { Locale } from "@/i18n/locale";
+import { normalizeIndianMobile } from "@/lib/phone";
+
+export { normalizeIndianMobile } from "@/lib/phone";
 
 export const quantityUnits = ["SQ_FT", "SQ_M", "PIECES", "SLABS", "BOXES"] as const;
 export const enquiryTypes = ["WHOLESALE", "RETAIL"] as const;
@@ -12,12 +15,6 @@ export const quantityUnitLabels = {
   SLABS: "Slabs",
   BOXES: "Boxes",
 } as const;
-
-export function normalizeIndianMobile(input: string): string | null {
-  const compact = input.replace(/[\s()-]/g, "");
-  const match = compact.match(/^(?:\+91|91|0)?([6-9]\d{9})$/);
-  return match?.[1] ?? null;
-}
 
 const emptyToNull = (value: unknown) => {
   if (typeof value === "string" && value.trim() === "") {

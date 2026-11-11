@@ -15,6 +15,20 @@ export class CatalogueAccessError extends Error {
   }
 }
 
+export class CategoryInUseError extends Error {
+  constructor() {
+    super("This category has products, so the record stays on file.");
+    this.name = "CategoryInUseError";
+  }
+}
+
+export class ProductInUseError extends Error {
+  constructor() {
+    super("This product is on a purchase order, so the record stays on file.");
+    this.name = "ProductInUseError";
+  }
+}
+
 export class CatalogueNotFoundError extends Error {
   status = 404;
 
@@ -228,6 +242,24 @@ export async function updateAdminCategory(db: CatalogueWriter, id: string, input
   return db.category.update({ where: { id }, data: input });
 }
 
+export async function deleteAdminCategory(db: CatalogueWriter, id: string) {
+  const existing = await db.category.findUnique({
+    where: { id },
+    select: { id: true, image: true, _count: { select: { products: true } } },
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  if (existing._count.products > 0) {
+    throw new CategoryInUseError();
+  }
+
+  await db.category.delete({ where: { id } });
+  return { id: existing.id, image: existing.image };
+}
+
 export async function listAdminProducts(db: PrismaClient) {
   return db.product.findMany({
     include: productInclude,
@@ -252,6 +284,28 @@ export async function createAdminProduct(db: CatalogueWriter, input: ProductInpu
     data: { id: randomUUID(), ...data },
     include: productInclude,
   });
+}
+
+export async function deleteAdminProduct(db: CatalogueWriter, id: string) {
+  const existing = await db.product.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      images: { select: { imageUrl: true } },
+      _count: { select: { purchaseOrderItems: true, stockMovements: true } },
+    },
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  if (existing._count.purchaseOrderItems > 0 || existing._count.stockMovements > 0) {
+    throw new ProductInUseError();
+  }
+
+  await db.product.delete({ where: { id } });
+  return { id: existing.id, imageUrls: existing.images.map((image) => image.imageUrl) };
 }
 
 export async function updateAdminProduct(

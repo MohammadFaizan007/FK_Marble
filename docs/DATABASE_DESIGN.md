@@ -45,7 +45,31 @@ A website enquiry. `enquiryType` is `WHOLESALE` or `RETAIL`. `status` defaults t
 
 ### Supplier
 
-A business that supplies stone or surfaces. Fields: `name`, optional `contactName`, `phone`, `email`, `address`, `gstin`, and `notes`, plus `isActive`. No opening balance, purchase, or payment is stored on this row.
+A business that supplies stone or surfaces. Fields: `name`, optional `contactName`, `phone`, `email`, `address`, `gstin`, and `notes`, plus `isActive`. No opening balance or payment is stored on this row.
+
+### PurchaseOrder
+
+A quantity order for one supplier. `status` is `DRAFT`, `APPROVED`, `PARTIALLY_RECEIVED`, `RECEIVED`, or `CANCELLED`. `number` is unique. Lines store the ordered quantity and the quantity already received. There is no cost, tax, or payment on the order.
+
+### GoodsReceipt
+
+A delivery against one purchase order. Each line points at one order line and stores the quantity received. Deleting a receipt is not offered. A later correction is a reversal, not a silent delete.
+
+### StockMovement
+
+On-hand stock is the sum of movements for a product. A purchase receipt adds a positive quantity. A sales dispatch adds a negative quantity. The public product API does not include this quantity or any cost.
+
+### Customer
+
+A person or business that buys stone or surfaces. `type` is `RETAIL`, `WHOLESALE`, `CONTRACTOR`, `BUILDER`, `ARCHITECT`, or `WALK_IN`. Fields also include `name`, optional `contactName`, `phone`, `email`, `address`, `gstin`, and `notes`, plus `isActive`. No opening balance or credit limit is stored on this row.
+
+### SalesOrder
+
+A quantity order for one customer. `status` is `DRAFT`, `APPROVED`, `PARTIALLY_RESERVED`, `RESERVED`, `PARTIALLY_DISPATCHED`, `DISPATCHED`, or `CANCELLED`. `number` is unique. Lines store the ordered, reserved, and dispatched quantities. There is no price, tax, or payment on the order.
+
+### DispatchNote
+
+A delivery against one sales order. Each line points at one order line and stores the quantity dispatched. The matching stock movement uses `SALES_DISPATCH` and a negative quantity. Deleting a dispatch is not offered.
 
 ### BusinessSettings
 
@@ -55,7 +79,9 @@ One seeded row for FK Marble: name, tagline, phone, WhatsApp, address, city, sta
 
 These names come from the master blueprint. They are not in the migration yet:
 
-User, Role, Permission, UserRole, RolePermission, ProductVariant, ProductSpecification, PriceList, ProductPrice, Customer, CustomerAddress, CustomerContact, Supplier, SupplierContact, Warehouse, WarehouseLocation, StockBatch, StockMovement, StockAdjustment, StockTransfer, Slab, Unit, UnitConversion, PurchaseOrder and its items, GoodsReceipt, PurchaseInvoice, PurchaseReturn, SalesOrder, SalesInvoice, SalesReturn, EnquiryItem, Quotation, QuotationItem, QuotationRevision, Payment, PaymentAllocation, Expense, Account, JournalEntry, JournalEntryLine, TaxRate, Notification, DocumentSequence.
+User, Role, Permission, UserRole, RolePermission, ProductVariant, ProductSpecification, PriceList, ProductPrice, CustomerAddress, CustomerContact, SupplierContact, Warehouse, WarehouseLocation, StockBatch, StockAdjustment, StockTransfer, Slab, Unit, UnitConversion, PurchaseInvoice, PurchaseReturn, SalesReturn, EnquiryItem, Payment, PaymentAllocation, Expense, Account, JournalEntry, JournalEntryLine, TaxRate, Notification.
+
+Quotation, QuotationItem, Invoice, and InvoiceItem are in migration `20261111153000_quotations_and_invoices`. A new revision is another quotation row with the same number. Invoice numbers come from the Postgres sequence `invoice_number_seq`, and quotation numbers come from `quotation_number_seq`. An issued invoice is cancelled by status, not by deleting the row. The quoted rate is not the product cost or wholesale price.
 
 Adding them will be a new migration after the public-website milestones. Existing rows will not be deleted to make room for that schema.
 

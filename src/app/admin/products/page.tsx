@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { AdminBar, StatusPill } from "@/components/admin/AdminBar";
+import { AdminBar, StatusText } from "@/components/admin/AdminBar";
+import { ProductActions } from "@/components/admin/ProductActions";
 import { loadStaffPage } from "@/lib/admin-page";
 import { getPrisma } from "@/lib/prisma";
 import { catalogueAccess, listAdminProducts, toAdminProduct } from "@/services/admin-catalogue";
@@ -50,13 +51,13 @@ async function Products() {
         <table className="w-full min-w-[720px] border-collapse text-left">
           <thead className="border-b border-border bg-muted/60">
             <tr>
-              <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Product</th>
-              <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Category</th>
-              <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Status</th>
+              <th className="px-4 py-3 text-sm font-bold text-foreground">Product</th>
+              <th className="px-4 py-3 text-sm font-bold text-foreground">Category</th>
+              <th className="px-4 py-3 text-sm font-bold text-foreground">Status</th>
               {access.prices ? (
-                <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Retail price</th>
+                <th className="px-4 py-3 text-sm font-bold text-foreground">Retail price</th>
               ) : null}
-              <th className="px-4 py-3 text-right text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Action</th>
+              <th className="px-4 py-3 text-right text-sm font-bold text-foreground">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -64,26 +65,20 @@ async function Products() {
               const view = toAdminProduct(product, access);
               return (
                 <tr key={product.id} className="border-b border-border last:border-b-0">
-                  <td className="px-4 py-3 font-medium text-foreground">{view.name}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{view.categoryName}</td>
+                  <td className="px-4 py-3 text-sm font-normal text-foreground">{view.name}</td>
+                  <td className="px-4 py-3 text-sm font-normal text-foreground">{view.categoryName}</td>
                   <td className="px-4 py-3">
-                    <StatusPill
-                      on={view.isActive && !view.isDemo}
-                      onLabel="Public"
-                      offLabel={view.isDemo ? "Demo sample" : "Hidden"}
-                    />
+                    <StatusText tone={view.isDemo ? "wait" : view.isActive ? "good" : "bad"}>
+                      {view.isActive && !view.isDemo ? "Public" : view.isDemo ? "Demo sample" : "Hidden"}
+                    </StatusText>
                   </td>
                   {access.prices ? (
-                    <td className="px-4 py-3 text-sm text-foreground">
+                    <td className="px-4 py-3 text-sm font-normal text-foreground">
                       {view.showPrice && view.price ? `₹${view.price}` : "Price on enquiry"}
                     </td>
                   ) : null}
                   <td className="px-4 py-3 text-right">
-                    {access.update ? (
-                      <a href={`/admin/products/${product.id}`} className="text-sm font-medium text-foreground underline decoration-border underline-offset-4">
-                        Edit
-                      </a>
-                    ) : null}
+                    {access.update ? <ProductActions id={product.id} /> : null}
                   </td>
                 </tr>
               );

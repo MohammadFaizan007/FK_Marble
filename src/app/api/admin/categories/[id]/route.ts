@@ -4,7 +4,7 @@ import { catalogueFailure } from "@/lib/catalogue-http";
 import { withAdminWrite } from "@/lib/admin-guard";
 import { categoryHindiPairs, fillMissingHindi } from "@/lib/translate-hi";
 import { removeStoredCategoryImage } from "@/lib/local-upload";
-import { CatalogueNotFoundError, updateAdminCategory } from "@/services/admin-catalogue";
+import { CatalogueNotFoundError, deleteAdminCategory, updateAdminCategory } from "@/services/admin-catalogue";
 
 export async function PATCH(request: Request, context: RouteContext<"/api/admin/categories/[id]">) {
   const { id } = await context.params;
@@ -59,6 +59,42 @@ export async function PATCH(request: Request, context: RouteContext<"/api/admin/
     }
 
     return apiSuccess("Category updated", result.value);
+  } catch (error) {
+    return catalogueFailure(error) ?? Promise.reject(error);
+  }
+}
+
+export async function DELETE(request: Request, context: RouteContext<"/api/admin/categories/[id]">) {
+  const { id } = await context.params;
+  let removedImage = "";
+
+  try {
+    const result = await withAdminWrite(request, "product.update", async (db) => {
+      const removed = await deleteAdminCategory(db, id);
+
+      if (!removed) {
+        throw new CatalogueNotFoundError("Category not found.");
+      }
+
+      removedImage = removed.image;
+
+      return {
+        value: { id: removed.id },
+        audit: {
+          action: "category.delete",
+          entityType: "Category",
+          entityId: removed.id,
+          summary: "Removed a category",
+        },
+      };
+    });
+
+    if (!result.ok) {
+      return apiError(result.message, result.status);
+    }
+
+    await removeStoredCategoryImage(removedImage);
+    return apiSuccess("Category removed", result.value);
   } catch (error) {
     return catalogueFailure(error) ?? Promise.reject(error);
   }

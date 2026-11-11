@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useChrome } from "@/i18n/use-chrome";
 import {
   enquiryTypes,
+  normalizeIndianMobile,
   quantityUnits,
 } from "@/lib/enquiry-schema";
 import { productEnquiryHref } from "@/lib/whatsapp";
@@ -37,6 +38,11 @@ export function ProductEnquiry({ product }: ProductEnquiryProps) {
 
     if (!Number.isFinite(amount) || amount <= 0) {
       setError(copy.validation.quantity);
+      return;
+    }
+
+    if (normalizeIndianMobile(phone) === null) {
+      setError(copy.validation.phone);
       return;
     }
 

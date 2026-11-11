@@ -13,6 +13,13 @@ export class SupplierNotFoundError extends Error {
   }
 }
 
+export class SupplierInUseError extends Error {
+  constructor() {
+    super("This supplier has purchase orders, so the record stays on file.");
+    this.name = "SupplierInUseError";
+  }
+}
+
 export function supplierAccess(role: AdminRole) {
   return {
     view: hasPermission(role, "supplier.view"),
@@ -38,4 +45,22 @@ export async function updateSupplier(db: SupplierWriter, id: string, input: Supp
   }
 
   return db.supplier.update({ where: { id }, data: input });
+}
+
+export async function deleteSupplier(db: SupplierWriter, id: string) {
+  const existing = await db.supplier.findUnique({
+    where: { id },
+    select: { id: true, _count: { select: { purchaseOrders: true } } },
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  if (existing._count.purchaseOrders > 0) {
+    throw new SupplierInUseError();
+  }
+
+  await db.supplier.delete({ where: { id } });
+  return existing.id;
 }

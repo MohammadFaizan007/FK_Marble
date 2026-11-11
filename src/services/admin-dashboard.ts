@@ -8,11 +8,16 @@ export type AdminDashboardCounts = {
   pendingEnquiries: number;
   activeStaff: number;
   suppliers: number;
+  purchaseOrders: number;
+  customers: number;
+  salesOrders: number;
+  quotations: number;
+  invoices: number;
 };
 
 export async function getAdminDashboardCounts(): Promise<AdminDashboardCounts> {
   const prisma = getPrisma();
-  const [activeCategories, publicProducts, demoProducts, enquiries, pendingEnquiries, activeStaff, suppliers] =
+  const [activeCategories, publicProducts, demoProducts, enquiries, pendingEnquiries, activeStaff, suppliers, purchaseOrders, customers, salesOrders, quotations, invoices] =
     await Promise.all([
       prisma.category.count({ where: { isActive: true } }),
       prisma.product.count({ where: { isActive: true, isDemo: false } }),
@@ -21,6 +26,11 @@ export async function getAdminDashboardCounts(): Promise<AdminDashboardCounts> {
       prisma.enquiry.count({ where: { status: "PENDING" } }),
       prisma.adminUser.count({ where: { isActive: true } }),
       prisma.supplier.count(),
+      prisma.purchaseOrder.count(),
+      prisma.customer.count(),
+      prisma.salesOrder.count(),
+      prisma.quotation.count(),
+      prisma.invoice.count(),
     ]);
 
   return {
@@ -31,5 +41,10 @@ export async function getAdminDashboardCounts(): Promise<AdminDashboardCounts> {
     pendingEnquiries,
     activeStaff,
     suppliers,
+    purchaseOrders,
+    customers,
+    salesOrders,
+    quotations,
+    invoices,
   };
 }

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { AdminBar, StatusPill } from "@/components/admin/AdminBar";
+import { AdminBar, StatusText } from "@/components/admin/AdminBar";
+import { SupplierActions } from "@/components/admin/SupplierActions";
 import { loadStaffPage } from "@/lib/admin-page";
 import { getPrisma } from "@/lib/prisma";
 import { listSuppliers, supplierAccess } from "@/services/admin-suppliers";
@@ -37,7 +38,11 @@ async function Suppliers() {
     <AdminBar profile={staff.profile} title="Suppliers">
       <div className="mt-6 flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
-          {suppliers.length === 0 ? "No suppliers yet." : `${suppliers.length} suppliers`}
+          {suppliers.length === 0
+            ? "No suppliers yet."
+            : suppliers.length === 1
+              ? "1 supplier"
+              : `${suppliers.length} suppliers`}
         </p>
         {access.update ? (
           <a href="/admin/suppliers/new" className="btn btn-primary">
@@ -50,28 +55,24 @@ async function Suppliers() {
           <table className="w-full min-w-[640px] border-collapse text-left">
             <thead className="border-b border-border bg-muted/60">
               <tr>
-                <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Supplier</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Contact</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Phone</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Status</th>
-                <th className="px-4 py-3 text-right text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">Action</th>
+                <th className="px-4 py-3 text-sm font-bold text-foreground">Supplier</th>
+                <th className="px-4 py-3 text-sm font-bold text-foreground">Contact</th>
+                <th className="px-4 py-3 text-sm font-bold text-foreground">Phone</th>
+                <th className="px-4 py-3 text-sm font-bold text-foreground">Status</th>
+                <th className="px-4 py-3 text-right text-sm font-bold text-foreground">Action</th>
               </tr>
             </thead>
             <tbody>
               {suppliers.map((supplier) => (
                 <tr key={supplier.id} className="border-b border-border last:border-b-0">
-                  <td className="px-4 py-3 font-medium text-foreground">{supplier.name}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{supplier.contactName || "—"}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{supplier.phone || "—"}</td>
+                  <td className="px-4 py-3 text-sm font-normal text-foreground">{supplier.name}</td>
+                  <td className="px-4 py-3 text-sm font-normal text-foreground">{supplier.contactName || "—"}</td>
+                  <td className="px-4 py-3 text-sm font-normal text-foreground">{supplier.phone || "—"}</td>
                   <td className="px-4 py-3">
-                    <StatusPill on={supplier.isActive} onLabel="Active" offLabel="Inactive" />
+                    <StatusText tone={supplier.isActive ? "good" : "bad"}>{supplier.isActive ? "Active" : "Inactive"}</StatusText>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {access.update ? (
-                      <a href={`/admin/suppliers/${supplier.id}`} className="text-sm font-medium text-foreground underline decoration-border underline-offset-4">
-                        Edit
-                      </a>
-                    ) : null}
+                    {access.update ? <SupplierActions id={supplier.id} /> : null}
                   </td>
                 </tr>
               ))}

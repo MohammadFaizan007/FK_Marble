@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalIndianMobileSchema } from "@/lib/phone";
 
 const optionalText = (max: number) =>
   z
@@ -13,25 +14,7 @@ const gstinPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
 export const supplierInputSchema = z.object({
   name: z.string().trim().min(2, "Enter the supplier name.").max(120),
   contactName: optionalText(80),
-  phone: z
-    .string()
-    .trim()
-    .max(20)
-    .optional()
-    .transform((value, context) => {
-      if (!value) {
-        return null;
-      }
-
-      const digits = value.replace(/\D/g, "");
-
-      if (digits.length < 8 || digits.length > 15) {
-        context.addIssue({ code: "custom", message: "Enter a phone number with 8 to 15 digits." });
-        return z.NEVER;
-      }
-
-      return digits;
-    }),
+  phone: optionalIndianMobileSchema(),
   email: z
     .string()
     .trim()
@@ -55,14 +38,14 @@ export const supplierInputSchema = z.object({
   gstin: z
     .string()
     .trim()
-    .max(15)
+    .max(24)
     .optional()
     .transform((value, context) => {
       if (!value) {
         return null;
       }
 
-      const gstin = value.toUpperCase();
+      const gstin = value.toUpperCase().replace(/[\s-]/g, "");
 
       if (!gstinPattern.test(gstin)) {
         context.addIssue({ code: "custom", message: "Enter a 15-character GSTIN." });

@@ -42,3 +42,6 @@ These rules apply from the current public site through the later admin ERP.
 - Cloudinary is not configured. When it is added, store the Cloudinary public id for those managed uploads.
 - Hindi catalogue translation is available only to a signed-in role that can create or update products. The English catalogue text is sent to the translation service. Passwords, prices, and customer enquiries are not sent.
 - Supplier records are available only to a signed-in role with supplier access. The public site has no supplier route.
+- Purchase orders and goods receipts are available only to a signed-in role that can create or approve purchases. Stock quantities from those receipts are not returned by the public product API.
+- Customer records and sales orders are available only to a signed-in role that can create or approve sales. The public site has no customer route. Dispatch quantities are not returned by the public product API.
+- Quotations and invoices are available only to a signed-in role that can create sales, approve sales, or issue invoices. The public site has no quotation or invoice route. The PDF shows the offered rate and does not include cost or wholesale prices. An issued invoice is cancelled in place. Its number is not deleted or reused.

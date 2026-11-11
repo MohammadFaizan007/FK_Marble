@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-11-11 — quotations and invoices
+
+- Signed-in sales staff can save a quotation with the rate offered to the customer. A sent quotation stays on file, and a later change is a new revision.
+- An accepted quotation can become a draft sales order. The order stores quantities only.
+- Issuing an invoice assigns the next number from a database sequence. An issued invoice cannot be edited or deleted. Cancelling it keeps the number. Tax and payments stay off these pages.
+
+## 2026-11-11 — customers and sales orders
+
+- Signed-in sales staff can save a customer name, type, contact, phone, email, address, GSTIN, and notes.
+- A sales order records quantities for an active customer and a product that is not a demo sample. An owner or administrator approves it.
+- Reserving goods holds free stock. Dispatch reduces the quantity on hand in the same step. Prices, invoices, payments, and credit limits stay off these pages.
+
+## 2026-11-11 — purchase orders and goods receipts
+
+- Signed-in purchase staff can draft a purchase order for an active supplier and a product that is not a demo sample.
+- An owner or administrator approves the order. Receiving goods updates the receipt and the stock record together.
+- Cost, invoices, supplier payments, and stock value stay off these pages and off the public site.
+
 ## 2026-11-11 — supplier records
 
 - Signed-in staff who can update suppliers can save a supplier name, contact, phone, email, address, GSTIN, and notes.

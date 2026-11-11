@@ -34,6 +34,46 @@ function NavIcon({ href }: { href: string }) {
     );
   }
 
+  if (href.endsWith("/purchases")) {
+    return (
+      <svg viewBox="0 0 24 24" className={common} aria-hidden="true">
+        <path d="M6 7h12v12H6zM9 7V5h6v2M8 12h8" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      </svg>
+    );
+  }
+
+  if (href.endsWith("/customers")) {
+    return (
+      <svg viewBox="0 0 24 24" className={common} aria-hidden="true">
+        <path d="M12 12a3.5 3.5 0 1 0-3.5-3.5A3.5 3.5 0 0 0 12 12zm-7 8v-1.5A4.5 4.5 0 0 1 9.5 14h5a4.5 4.5 0 0 1 4.5 4.5V20" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      </svg>
+    );
+  }
+
+  if (href.endsWith("/quotations")) {
+    return (
+      <svg viewBox="0 0 24 24" className={common} aria-hidden="true">
+        <path d="M7 3h7l5 5v13H7zM14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      </svg>
+    );
+  }
+
+  if (href.endsWith("/invoices")) {
+    return (
+      <svg viewBox="0 0 24 24" className={common} aria-hidden="true">
+        <path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21zM9 8h6M9 12h6" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      </svg>
+    );
+  }
+
+  if (href.endsWith("/sales")) {
+    return (
+      <svg viewBox="0 0 24 24" className={common} aria-hidden="true">
+        <path d="M6 7h12l-1 12H7zM9 7a3 3 0 0 1 6 0" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      </svg>
+    );
+  }
+
   if (href.endsWith("/products")) {
     return (
       <svg viewBox="0 0 24 24" className={common} aria-hidden="true">

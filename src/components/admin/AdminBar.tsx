@@ -36,6 +36,23 @@ export function AdminBar({
         ]
       : []),
     ...(hasPermission(profile.role, "supplier.view") ? [{ href: "/admin/suppliers", label: "Suppliers" }] : []),
+    ...(hasPermission(profile.role, "purchase.create") || hasPermission(profile.role, "purchase.approve")
+      ? [{ href: "/admin/purchases", label: "Purchases" }]
+      : []),
+    ...(hasPermission(profile.role, "sales.create") || hasPermission(profile.role, "sales.approve")
+      ? [
+          { href: "/admin/customers", label: "Customers" },
+          { href: "/admin/sales", label: "Sales" },
+        ]
+      : []),
+    ...(hasPermission(profile.role, "sales.create") ||
+    hasPermission(profile.role, "sales.approve") ||
+    hasPermission(profile.role, "invoice.issue")
+      ? [
+          { href: "/admin/quotations", label: "Quotations" },
+          { href: "/admin/invoices", label: "Invoices" },
+        ]
+      : []),
   ];
 
   return (
@@ -72,16 +89,9 @@ export function AdminBar({
   );
 }
 
-export function StatusPill({ on, onLabel, offLabel }: { on: boolean; onLabel: string; offLabel: string }) {
-  return (
-    <span
-      className={
-        on
-          ? "inline-flex rounded-full bg-[#E7F3EA] px-2.5 py-1 text-xs font-medium text-[#1F6B3A]"
-          : "inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
-      }
-    >
-      {on ? onLabel : offLabel}
-    </span>
-  );
+export function StatusText({ tone, children }: { tone: "good" | "bad" | "wait"; children: string }) {
+  const color = tone === "good" ? "text-[#1F6B3A]" : tone === "bad" ? "text-destructive" : "text-[#B18A58]";
+
+  return <span className={`text-sm font-bold ${color}`}>{children}</span>;
 }
+

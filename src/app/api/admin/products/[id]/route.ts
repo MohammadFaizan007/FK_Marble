@@ -7,10 +7,12 @@ import { getPrisma } from "@/lib/prisma";
 import {
   CatalogueNotFoundError,
   catalogueAccess,
+  deleteAdminProduct,
   getAdminProduct,
   toAdminProduct,
   updateAdminProduct,
 } from "@/services/admin-catalogue";
+import { removeStoredUpload } from "@/lib/local-upload";
 
 export async function GET(request: Request, context: RouteContext<"/api/admin/products/[id]">) {
   const access = await requireCatalogueView(request);
@@ -71,6 +73,42 @@ export async function PATCH(request: Request, context: RouteContext<"/api/admin/
     }
 
     return apiSuccess("Product updated", result.value);
+  } catch (error) {
+    return catalogueFailure(error) ?? Promise.reject(error);
+  }
+}
+
+export async function DELETE(request: Request, context: RouteContext<"/api/admin/products/[id]">) {
+  const { id } = await context.params;
+  let imageUrls: string[] = [];
+
+  try {
+    const result = await withAdminWrite(request, "product.update", async (db) => {
+      const removed = await deleteAdminProduct(db, id);
+
+      if (!removed) {
+        throw new CatalogueNotFoundError("Product not found.");
+      }
+
+      imageUrls = removed.imageUrls;
+
+      return {
+        value: { id: removed.id },
+        audit: {
+          action: "product.delete",
+          entityType: "Product",
+          entityId: removed.id,
+          summary: "Removed a product",
+        },
+      };
+    });
+
+    if (!result.ok) {
+      return apiError(result.message, result.status);
+    }
+
+    await Promise.all(imageUrls.map((imageUrl) => removeStoredUpload(imageUrl)));
+    return apiSuccess("Product removed", result.value);
   } catch (error) {
     return catalogueFailure(error) ?? Promise.reject(error);
   }
