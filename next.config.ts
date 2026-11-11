@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "pg"],
   experimental: {
     agentFeedback: true,
   },
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },
-    },
+    }, 
   },
 };
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-labelledby="title">
+  <title id="title">FK Marble</title>
+  <rect width="32" height="32" rx="6" fill="#24231F"/>
+  <path d="M8.2 3.2 H23.8 L28.8 8.2 V23.8 L23.8 28.8 H8.2 L3.2 23.8 V8.2 Z" fill="none" stroke="#B18A58" stroke-width="1.2"/>
+  <path d="M9 8.5 V23.5 M9 8.5 H17.2 M9 15.6 H14.8" stroke="#B18A58" stroke-width="2.1" stroke-linecap="square"/>
+  <path d="M19.2 8.5 V23.5 M19.2 15.8 L25.2 8.8 M19.2 15.8 L25.2 23.2" stroke="#B18A58" stroke-width="2.1" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>

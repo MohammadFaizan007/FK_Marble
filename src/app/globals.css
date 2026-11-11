@@ -1,0 +1,258 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+  The showroom palette stays cream and charcoal. Dark utilities apply only
+  when an ancestor has the `.dark` class, so the system theme does not
+  replace the brand background.
+*/
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 2.5);
+  --radius-4xl: calc(var(--radius) * 3);
+  --font-sans: var(--font-dm-sans), var(--font-devanagari), ui-sans-serif, sans-serif;
+  --font-heading: var(--font-playfair), var(--font-devanagari), Georgia, "Times New Roman", serif;
+  --spacing-section: 5rem;
+}
+
+:root {
+  color-scheme: light;
+  --radius: 0.5rem;
+  --background: #f7f5f0;
+  --foreground: #24231f;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #24231f;
+  --popover: #ffffff;
+  --popover-foreground: #24231f;
+  --primary: #24231f;
+  --primary-foreground: #f7f5f0;
+  --secondary: #f3efe8;
+  --secondary-foreground: #24231f;
+  --muted: #f1ede6;
+  --muted-foreground: #77766f;
+  --accent: #b18a58;
+  --accent-foreground: #24231f;
+  --destructive: #9c3b32;
+  --border: #e7e2d9;
+  --input: #e7e2d9;
+  --ring: #b18a58;
+  --chart-1: #b18a58;
+  --chart-2: #24231f;
+  --chart-3: #8d7350;
+  --chart-4: #d8c7ae;
+  --chart-5: #5c5852;
+  --sidebar: #f7f5f0;
+  --sidebar-foreground: #24231f;
+  --sidebar-primary: #24231f;
+  --sidebar-primary-foreground: #f7f5f0;
+  --sidebar-accent: #f3efe8;
+  --sidebar-accent-foreground: #24231f;
+  --sidebar-border: #e7e2d9;
+  --sidebar-ring: #b18a58;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #24231f;
+  --foreground: #f7f5f0;
+  --surface: #2e2c28;
+  --card: #2e2c28;
+  --card-foreground: #f7f5f0;
+  --popover: #2e2c28;
+  --popover-foreground: #f7f5f0;
+  --primary: #f7f5f0;
+  --primary-foreground: #24231f;
+  --secondary: #3a3834;
+  --secondary-foreground: #f7f5f0;
+  --muted: #3a3834;
+  --muted-foreground: #c8c4ba;
+  --accent: #b18a58;
+  --accent-foreground: #24231f;
+  --destructive: #e07a70;
+  --border: #3f3c37;
+  --input: #3f3c37;
+  --ring: #b18a58;
+  --sidebar: #24231f;
+  --sidebar-foreground: #f7f5f0;
+  --sidebar-primary: #b18a58;
+  --sidebar-primary-foreground: #24231f;
+  --sidebar-accent: #3a3834;
+  --sidebar-accent-foreground: #f7f5f0;
+  --sidebar-border: #3f3c37;
+  --sidebar-ring: #b18a58;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply overflow-x-clip bg-background font-sans text-foreground antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 4vw, 3.75rem);
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    line-height: 1.25;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .hero-copy {
+      animation: none;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    text-transform: uppercase;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .btn-primary:hover {
+    background: #3a3834;
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .btn-accent:hover {
+    background: #c4a06a;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--foreground);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .hero-title {
+    color: #ffffff;
+    font-size: clamp(2.6rem, 6.2vw, 5.15rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-copy {
+    animation: hero-rise 700ms ease both;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
